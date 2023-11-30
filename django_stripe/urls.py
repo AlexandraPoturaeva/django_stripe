@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import include, path
-from items.views import (
+from payments.views import (
     CreateStripeCheckoutSessionForItemView,
     SuccessPaymentView,
     CancelPaymentView,
@@ -9,7 +9,7 @@ from items.views import (
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('item/', include('items.urls')),
+    path('item/', include('payments.urls')),
     path(
         'buy/<int:item_id>/',
         CreateStripeCheckoutSessionForItemView.as_view(),

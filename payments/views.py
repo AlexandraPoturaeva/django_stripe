@@ -9,6 +9,9 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 
 class ItemDetailView(View):
     def get(self, request, item_id):
+        if not request.session.session_key:
+            request.session.create()
+        print(request.session.session_key)
         context = {
             'item': get_object_or_404(Item, pk=item_id),
         }
