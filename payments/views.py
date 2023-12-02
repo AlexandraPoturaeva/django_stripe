@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_POST
 from .models import Item, Order, ItemsInOrder
 from django.db.models import Sum
-from .services import get_session_id, create_checkout_session
+from .services import get_session_id, process_payment
 import json
 
 
@@ -61,7 +61,7 @@ class BuyItemView(View):
             quantity=1,
         )
 
-        return create_checkout_session(items=[item_in_order])
+        return process_payment(items=[item_in_order])
 
 
 @require_POST
@@ -107,7 +107,7 @@ def add_item_to_order_view(request):
 
 
 class BuyOrderView(View):
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         session_id = get_session_id(request)
         order = Order.objects.filter(
             session_id=session_id,
@@ -117,7 +117,7 @@ class BuyOrderView(View):
             order=order,
         ).select_related('item')
 
-        return create_checkout_session(items=items_in_order)
+        return process_payment(items=items_in_order)
 
 
 class SuccessPaymentView(TemplateView):
