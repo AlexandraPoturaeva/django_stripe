@@ -7,7 +7,7 @@
         <h6>Price: ${{ item.get_price_display }}</h6>
         <p >Description: {{ item.description }}</p>
         <form action="{% url 'buy_item' item.id %}" method="GET">
-            <button type="submit" class="btn btn-primary" id="checkout-button">Buy</button>
+            <button type="submit" class="btn btn-primary" id="checkout-button">Pay with stripe checkout</button>
         </form>
     </div>
 </div>

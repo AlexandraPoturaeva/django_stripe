@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Payment result{% endblock title %}
+{% block content %}
+<div class="row">
+    <div class="col-4"></div>
+    <div class="col-4 text-center">
+        <div class="card text-center w-75">
+            <div class="card-header">Payment result</div>
+            <div class="card-body">
+                <h5 class="card-title hidden" id="payment-message"></h5>
+                <a href="{% url 'all_items' %}" class="btn btn-primary">Go to items</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-4"></div>
+</div>
+{% endblock content %}

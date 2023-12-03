@@ -7,19 +7,12 @@
     <div class="col">
         <div class="card text-start">
             <div class="card-body">
-                <h5 class="card-title">{{ item.name }}</h5>
+                <a href="{% url 'item_details' item_id=item.id %}">
+                    <h5 class="card-title">{{ item.name }}</h5>
+                </a>
                 <h6 class="card-subtitle mb-2 text-body-secondary">${{ item.get_price_display }}</h6>
                 <p class="card-text">{{ item.description }}</p>
                 <div class="row justify-content-md-center">
-                    <div class="col">
-                        <form action="{% url 'buy_item' item.id %}" method="GET">
-                            <button type="submit"
-                                    class="btn btn-primary"
-                                    id=buy-item-{{item.id}}>
-                                    Buy
-                            </button>
-                        </form>
-                    </div>
                     <div class="col">
                         <a class="btn btn-primary add-item-to-order"
                            data-item-id="{{ item.id }}"
@@ -37,12 +30,29 @@
 
 {% if all_items %}
 <div class="p-2"></div>
-<form action="{% url 'buy_order' %}" method="POST">
-    {% csrf_token %}
-    <button type="submit"
-            class="btn btn-primary buy_items_button"
-            {% if items_in_order_cnt == 0 %}disabled{% endif %}
-    >Buy {{ items_in_order_cnt }} items for ${{ order_total_cost }}</button>
-</form>
+<p class="fs-4 order-info">Buy {{ items_in_order_cnt }} items for ${{ order_total_cost }}</p>
+<div class="row">
+    <div class="col-auto">
+        <form action="{% url 'pay_order' %}" method="POST">
+            {% csrf_token %}
+            <button type="submit"
+                    class="btn btn-primary pay-order-with-checkout"
+                    {% if not order_id %}disabled{% endif %}
+            >Pay with checkout</button>
+        </form>
+    </div>
+    <div class="col-auto">
+        <button type="submit"
+                    class="btn btn-primary show-payment-intent-form"
+                    data-fetch-url="/pay-order-with-payment-intent/"
+                    data-order-id="{{ order_id }}"
+                    data-bs-toggle="modal"
+                    data-bs-target="#paymentIntentModal"
+                    {% if not order_id %}disabled{% endif %}
+            >Pay with payment intent</button>
+    </div>
+</div>
+{% include "payment_intent_modal.html"%}
 {% endif %}
+
 {% endblock content %}

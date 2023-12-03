@@ -1,9 +1,11 @@
 from django.conf import settings
-from django.shortcuts import redirect
-from django.http import HttpRequest, HttpResponse
+from django.shortcuts import redirect, get_object_or_404
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.db.models.query import QuerySet
-from .models import Item, Tax, Discount, Order
+from django.db.models import Sum
+from .models import Item, ItemsInOrder, Tax, Discount, Order
 import stripe
+
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -12,6 +14,45 @@ def get_session_id(request: HttpRequest) -> str:
     if not request.session.session_key:
         request.session.save()
     return request.session.session_key
+
+
+def get_item_from_new_order(request, item_id):
+    item = get_object_or_404(Item, pk=item_id)
+    session_id = get_session_id(request)
+    order = Order.objects.create(
+        session_id=session_id,
+        status='NP',
+    )
+    item_in_order = ItemsInOrder.objects.create(
+        order=order,
+        item=item,
+        quantity=1,
+    )
+
+    return item_in_order
+
+
+def get_all_items_in_order(order_id: int):
+    return ItemsInOrder.objects.filter(
+        order=order_id,
+    ).select_related("item")
+
+
+def calculate_order_total_cost(items: QuerySet[Item]) -> int:
+    order_total_cost = sum([
+        item.item.price * item.quantity
+        for item in items
+    ]) / 100
+
+    return order_total_cost
+
+
+def calculate_number_of_items_in_order(items: QuerySet[Item]) -> int:
+    num_of_items = items.aggregate(
+        Sum("quantity"),
+    )['quantity__sum']
+
+    return num_of_items
 
 
 def create_stripe_tax_rate(order: Order) -> stripe.TaxRate:
@@ -48,7 +89,7 @@ def create_stripe_checkout_session(
     return checkout_session
 
 
-def process_payment(
+def process_payment_with_stripe_checkout(
         items: QuerySet[Item] | list[Item],
 ) -> HttpResponse:
     """
@@ -108,3 +149,17 @@ def process_payment(
     order.save()
 
     return redirect(checkout_session.url)
+
+
+def process_payment_intent(price: int) -> JsonResponse:
+    try:
+        intent = stripe.PaymentIntent.create(
+            amount=price,
+            currency='usd',
+        )
+        print(intent['client_secret'])
+        return JsonResponse({
+            'clientSecret': intent['client_secret'],
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)})
