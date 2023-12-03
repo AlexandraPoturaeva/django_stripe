@@ -64,6 +64,9 @@ class Discount(TimeStampedModel):
         blank=True,
     )
 
+    def __str__(self):
+        return f'{self.name} {self.percent_off}%'
+
 
 class Order(TimeStampedModel):
     class Meta:
@@ -99,3 +102,6 @@ class ItemsInOrder(TimeStampedModel):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     quantity = models.SmallIntegerField(default=0)
+
+    def __str__(self):
+        return f'Order # {self.order.id}'
