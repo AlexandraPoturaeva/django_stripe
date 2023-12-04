@@ -1,0 +1,8 @@
+{% extends "base.html" %} 
+{% block title %} Success payment {% endblock title%}
+{% block content %}
+<div class="alert alert-success" role="alert">
+  Thanks for purchasing our product
+</div>
+<a href="{% url 'all_items' %}" class="btn btn-primary">Go to items</a>
+{% endblock content %}

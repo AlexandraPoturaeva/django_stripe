@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Items{% endblock title %}
+{% block content %}
+<div class="p-1 text-center space-for-messages"></div>
+<div class="row row-cols-1 row-cols-md-4 g-4">
+    {% for item in all_items %}
+    <div class="col">
+        <div class="card text-start">
+            <div class="card-body">
+                <a href="{% url 'item_details' item_id=item.id %}">
+                    <h5 class="card-title">{{ item.name }}</h5>
+                </a>
+                <h6 class="card-subtitle mb-2 text-body-secondary">${{ item.get_price_display }}</h6>
+                <p class="card-text">{{ item.description }}</p>
+                <div class="row justify-content-md-center">
+                    <div class="col">
+                        <a class="btn btn-primary add-item-to-order"
+                           data-item-id="{{ item.id }}"
+                           role="button"
+                        >Add to order</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <h1>No items yet</h1>
+    {% endfor %}
+</div>
+
+{% if all_items %}
+<div class="p-2"></div>
+<p class="fs-4 order-info">Buy {{ items_in_order_cnt }} items for ${{ order_total_cost }}</p>
+<div class="row">
+    <div class="col-auto">
+        <form action="{% url 'pay_order' %}" method="POST">
+            {% csrf_token %}
+            <button type="submit"
+                    class="btn btn-primary pay-order-with-checkout"
+                    {% if not order_id %}disabled{% endif %}
+            >Pay with checkout</button>
+        </form>
+    </div>
+    <div class="col-auto">
+        <button type="submit"
+                    class="btn btn-primary show-payment-intent-form"
+                    data-fetch-url="/pay-order-with-payment-intent/"
+                    data-order-id="{{ order_id }}"
+                    data-bs-toggle="modal"
+                    data-bs-target="#paymentIntentModal"
+                    {% if not order_id %}disabled{% endif %}
+            >Pay with payment intent</button>
+    </div>
+</div>
+{% include "payment_intent_modal.html"%}
+{% endif %}
+
+{% endblock content %}

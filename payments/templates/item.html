@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}{{ item.name }}{% endblock title %}
+{% block content %}
+<div class="row justify-content-center ">
+    <div class="col text-center">
+        <h5>Name: {{ item.name }}</h5>
+        <h6>Price: ${{ item.get_price_display }}</h6>
+        <p >Description: {{ item.description }}</p>
+        <form action="{% url 'buy_item' item.id %}" method="GET">
+            <button type="submit" class="btn btn-primary" id="checkout-button">Pay with stripe checkout</button>
+        </form>
+    </div>
+</div>
+{% endblock content %}

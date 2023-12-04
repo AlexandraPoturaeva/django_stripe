@@ -1,0 +1,8 @@
+add-trailing-comma==3.1.0
+Django==4.2.7
+django-extensions==3.2.3
+flake8==6.1.0
+pre-commit==3.5.0
+python-dotenv==1.0.0
+stripe==7.6.0
+ipython==8.18.1
