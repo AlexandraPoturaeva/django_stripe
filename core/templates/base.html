@@ -15,6 +15,7 @@
 <body>
     <main class="container-fluid">
         {{ stripe_pk|json_script:'stripe_pk' }}
+        {{ backend_domain|json_script:'backend_domain' }}
         {% block content %}
         {% endblock content %}
     </main>

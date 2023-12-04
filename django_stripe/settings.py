@@ -69,6 +69,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'payments.context_processors.stripe_pk_processor',
+                'payments.context_processors.backend_domain_processor',
             ],
         },
     },
