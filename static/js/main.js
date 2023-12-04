@@ -1,5 +1,6 @@
 $(function (){
     const stripe_pk = JSON.parse(document.getElementById('stripe_pk').textContent);
+    const backend_domain = JSON.parse(document.getElementById('backend_domain').textContent);
     const stripe = Stripe(stripe_pk);
 
     function getCookie(name) {
@@ -106,7 +107,7 @@ $(function (){
         const { error } = await stripe.confirmPayment({
             elements,
             confirmParams: {
-                return_url: "http://127.0.0.1:8000/payment-intent-result/?order_id=" + order_id,
+                return_url: backend_domain + "/payment-intent-result/?order_id=" + order_id,
             },
         });
 
